@@ -1,5 +1,7 @@
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import { useState } from "react";
+import { UserDetailContext } from "./../context/UserContext";
 
 export default function RootLayout() {
   useFonts({
@@ -7,11 +9,15 @@ export default function RootLayout() {
     "outfit-bold": require("./../assets/fonts/Outfit-Bold.ttf"),
   });
 
+  const [userDetail, setUserDetail] = useState();
+
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    ></Stack>
+    <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      ></Stack>
+    </UserDetailContext.Provider>
   );
 }
