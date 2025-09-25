@@ -32,11 +32,11 @@ export default function SignIn() {
       />
       <Text
         style={{
-          fontsize: 30,
+          fontSize: 30,
           fontFamily: "outfit-bold",
         }}
       >
-        Create New Account
+        Welcome Back
       </Text>
 
       <TextInput placeholder="Email" style={styles.textInput} />

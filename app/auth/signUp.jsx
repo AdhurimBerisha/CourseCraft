@@ -31,7 +31,7 @@ export default function SignUp() {
       />
       <Text
         style={{
-          fontsize: 30,
+          fontSize: 30,
           fontFamily: "outfit-bold",
         }}
       >
