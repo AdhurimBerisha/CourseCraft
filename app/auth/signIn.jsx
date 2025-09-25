@@ -28,12 +28,11 @@ export default function SignIn() {
     setLoading(true);
     signInWithEmailAndPassword(auth, email, password)
       .then(async (res) => {
-        // Signed in
         const user = res.user;
         console.log(user);
         await getUserDetail();
         setLoading(false);
-        // ...
+        router.replace("/(tabs)/home");
       })
       .catch((error) => {
         setLoading(false);
