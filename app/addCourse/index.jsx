@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import Button from "../../components/shared/Button";
 import { generateTopic } from "../../config/AIModel";
 import Colors from "../../constants/Colors";
@@ -8,12 +8,52 @@ import Prompt from "./../../constants/Prompt";
 export default function AddCourse() {
   const [loading, setLoading] = useState(false);
   const [userInput, setUserInput] = useState();
+  const [topics, setTopics] = useState([]);
   const onGenerateTopic = async () => {
     setLoading(true);
     try {
-      const PROMPT = userInput + " " + Prompt.IDEA;
-      const topics = await generateTopic(PROMPT);
-      console.log("Generated topics:", topics);
+      const PROMPT = (userInput || "") + " " + Prompt.IDEA;
+      const result = await generateTopic(PROMPT);
+      console.log("Generated topics (raw):", result);
+
+      // Normalize whatever the AI returned into an array of strings.
+      if (Array.isArray(result)) {
+        setTopics(result);
+      } else if (typeof result === "string") {
+        // Try to parse a JSON array string if the model returned a JSON blob.
+        try {
+          const parsed = JSON.parse(result);
+          if (Array.isArray(parsed)) setTopics(parsed);
+          else
+            setTopics(
+              result
+                .split(/\r?\n/)
+                .map((s) => s.trim())
+                .filter(Boolean)
+            );
+        } catch (_e) {
+          // Fallback: split lines or comma-separated
+          const byLines = result
+            .split(/\r?\n/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+          if (byLines.length) setTopics(byLines);
+          else
+            setTopics(
+              result
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+            );
+        }
+      } else if (result && typeof result === "object") {
+        // If an object was returned, try to find a first array property
+        const arr = Object.values(result).find((v) => Array.isArray(v));
+        if (Array.isArray(arr)) setTopics(arr);
+        else setTopics([]);
+      } else {
+        setTopics([]);
+      }
     } catch (err) {
       console.error("AI error:", err);
     } finally {
@@ -71,6 +111,34 @@ export default function AddCourse() {
         onPress={() => onGenerateTopic()}
         loading={loading}
       />
+
+      <View
+        style={{
+          marginTop: 15,
+        }}
+      >
+        <Text
+          style={{
+            fontFamily: "outfit",
+            fontSize: 20,
+          }}
+        >
+          Select all topics which you want to add in the course
+        </Text>
+        <View>
+          {Array.isArray(topics) && topics.length > 0 ? (
+            topics.map((item, index) => (
+              <Pressable key={index}>
+                <Text>{item}</Text>
+              </Pressable>
+            ))
+          ) : (
+            <Text style={{ color: Colors.GRAY, marginTop: 8 }}>
+              No topics yet. Generate one to see suggestions.
+            </Text>
+          )}
+        </View>
+      </View>
     </View>
   );
 }

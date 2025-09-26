@@ -26,7 +26,7 @@ As you are a coaching teacher:
 - Output as a strict JSON array of strings only. Example: ["Intro to JS", "Advanced JS"]`,
         },
       ],
-      response_format: { type: "json_object" }, // ✅ force JSON
+      response_format: { type: "json_object" },
     }),
   });
 
