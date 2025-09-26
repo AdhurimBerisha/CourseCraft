@@ -1,3 +1,5 @@
+import Prompt from "./../constants/Prompt";
+
 // config/AIModel.tsx
 const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -36,6 +38,45 @@ As you are a coaching teacher:
 
   try {
     // some models wrap JSON in code fences → strip them
+    text = text.replace(/```json|```/g, "").trim();
+    return JSON.parse(text);
+  } catch (err) {
+    console.error("Parse error, raw output:", text);
+    return [];
+  }
+}
+
+export async function generateCourse(topics: string[]) {
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error("Missing OpenRouter API key");
+
+  // Convert topics array to string
+  const topicsStr = topics.join(", ");
+
+  const prompt = `${topicsStr} ${Prompt.COURSE}`;
+
+  const response = await fetch(OPENROUTER_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "x-ai/grok-4-fast:free",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      response_format: { type: "json_object" },
+    }),
+  });
+
+  const data = await response.json();
+  let text = data.choices?.[0]?.message?.content || "[]";
+
+  try {
     text = text.replace(/```json|```/g, "").trim();
     return JSON.parse(text);
   } catch (err) {

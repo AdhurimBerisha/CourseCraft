@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import Button from "../../components/shared/Button";
-import { generateTopic } from "../../config/AIModel";
+import { generateCourse, generateTopic } from "../../config/AIModel";
 import Colors from "../../constants/Colors";
 import Prompt from "./../../constants/Prompt";
 
@@ -63,7 +63,7 @@ export default function AddCourse() {
   };
 
   const onTopicSelect = (topic) => {
-    const isAlreadyExist = selectedTopic.find((item) => item == topic);
+    const isAlreadyExist = selectedTopic.find((item) => item === topic);
     if (!isAlreadyExist) {
       setSelectedTopics((prev) => [...prev, topic]);
     } else {
@@ -73,8 +73,27 @@ export default function AddCourse() {
   };
 
   const isTopicSelected = (topic) => {
-    const selection = selectedTopic.find((item) => item == topic);
+    const selection = selectedTopic.find((item) => item === topic);
     return selection ? true : false;
+  };
+
+  const onGenerateCourse = async () => {
+    if (!selectedTopic || selectedTopic.length === 0) {
+      console.warn(
+        "No topics selected - select at least one topic to generate a course"
+      );
+      return;
+    }
+    setLoading(true);
+    try {
+      console.log("Generating course for topics:", selectedTopic);
+      const result = await generateCourse(selectedTopic);
+      console.log("Generated course result:", result);
+    } catch (err) {
+      console.error("generateCourse error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -178,6 +197,13 @@ export default function AddCourse() {
           )}
         </View>
       </View>
+      {selectedTopic && selectedTopic.length > 0 ? (
+        <Button
+          text="Generate Course"
+          onPress={() => onGenerateCourse()}
+          loading={loading}
+        />
+      ) : null}
     </View>
   );
 }
