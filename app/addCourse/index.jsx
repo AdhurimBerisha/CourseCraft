@@ -9,6 +9,7 @@ export default function AddCourse() {
   const [loading, setLoading] = useState(false);
   const [userInput, setUserInput] = useState();
   const [topics, setTopics] = useState([]);
+  const [selectedTopic, setSelectedTopics] = useState([]);
   const onGenerateTopic = async () => {
     setLoading(true);
     try {
@@ -59,6 +60,21 @@ export default function AddCourse() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const onTopicSelect = (topic) => {
+    const isAlreadyExist = selectedTopic.find((item) => item == topic);
+    if (!isAlreadyExist) {
+      setSelectedTopics((prev) => [...prev, topic]);
+    } else {
+      const topics = selectedTopic.filter((item) => item !== topic);
+      setSelectedTopics(topics);
+    }
+  };
+
+  const isTopicSelected = (topic) => {
+    const selection = selectedTopic.find((item) => item == topic);
+    return selection ? true : false;
   };
 
   return (
@@ -136,13 +152,19 @@ export default function AddCourse() {
         >
           {Array.isArray(topics) && topics.length > 0 ? (
             topics.map((item, index) => (
-              <Pressable key={index}>
+              <Pressable key={index} onPress={() => onTopicSelect(item)}>
                 <Text
                   style={{
                     padding: 7,
                     borderWidth: 0.4,
                     borderRadius: 99,
                     paddingHorizontal: 15,
+                    backgroundColor: isTopicSelected(item)
+                      ? Colors.PRIMARY
+                      : null,
+                    color: isTopicSelected(item)
+                      ? Colors.WHITE
+                      : Colors.PRIMARY,
                   }}
                 >
                   {item}
