@@ -1,6 +1,6 @@
-import { Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 import Colors from "../../constants/Colors";
-export default function Button({ text, type = "fill", onPress }) {
+export default function Button({ text, type = "fill", onPress, loading }) {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -13,16 +13,24 @@ export default function Button({ text, type = "fill", onPress }) {
         borderColor: Colors.PRIMARY,
         backgroundColor: type == "fill" ? Colors.PRIMARY : Colors.WHITE,
       }}
+      disabled={loading}
     >
-      <Text
-        style={{
-          textAlign: "center",
-          fontSize: 18,
-          color: type == "fill" ? Colors.WHITE : Colors.PRIMARY,
-        }}
-      >
-        {text}
-      </Text>
+      {!loading ? (
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 18,
+            color: type == "fill" ? Colors.WHITE : Colors.PRIMARY,
+          }}
+        >
+          {text}
+        </Text>
+      ) : (
+        <ActivityIndicator
+          size={"small"}
+          color={type == "fill" ? Colors.WHITE : Colors.PRIMARY}
+        />
+      )}
     </TouchableOpacity>
   );
 }
