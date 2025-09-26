@@ -125,11 +125,28 @@ export default function AddCourse() {
         >
           Select all topics which you want to add in the course
         </Text>
-        <View>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 10,
+            marginTop: 6,
+          }}
+        >
           {Array.isArray(topics) && topics.length > 0 ? (
             topics.map((item, index) => (
               <Pressable key={index}>
-                <Text>{item}</Text>
+                <Text
+                  style={{
+                    padding: 7,
+                    borderWidth: 0.4,
+                    borderRadius: 99,
+                    paddingHorizontal: 15,
+                  }}
+                >
+                  {item}
+                </Text>
               </Pressable>
             ))
           ) : (
