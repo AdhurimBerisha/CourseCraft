@@ -1,7 +1,7 @@
 import dedent from "dedent";
 
 export default {
-  IDEA: dedent`:As your are coaching teacher
+  IDEA: dedent`:As you are a coaching teacher
     - User want to learn about the topic
     - Generate 5-7 Course title for study (Short)
     - Make sure it is releated to description
@@ -64,8 +64,5 @@ export default {
     ]
   }
 ]
-    `
-}
-
-
-
+    `,
+};

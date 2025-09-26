@@ -1,11 +1,25 @@
 import { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import Button from "../../components/shared/Button";
+import { generateTopic } from "../../config/AIModel";
 import Colors from "../../constants/Colors";
+import Prompt from "./../../constants/Prompt";
 
 export default function AddCourse() {
   const [loading, setLoading] = useState(false);
-  const onGenerateTopic = () => {};
+  const [userInput, setUserInput] = useState();
+  const onGenerateTopic = async () => {
+    setLoading(true);
+    try {
+      const PROMPT = userInput + " " + Prompt.IDEA;
+      const topics = await generateTopic(PROMPT);
+      console.log("Generated topics:", topics);
+    } catch (err) {
+      console.error("AI error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View
@@ -48,6 +62,7 @@ export default function AddCourse() {
         style={styles.textInput}
         numberOfLines={3}
         multiline={true}
+        onChangeText={(value) => setUserInput(value)}
       />
 
       <Button
