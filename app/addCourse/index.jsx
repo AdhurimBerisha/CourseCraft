@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useRouter } from "expo-router";
+import { doc, setDoc } from "firebase/firestore";
+import { useContext, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import Button from "../../components/shared/Button";
 import { generateCourse, generateTopic } from "../../config/AIModel";
+import { db } from "../../config/firebaseConfig";
 import Colors from "../../constants/Colors";
 import Prompt from "./../../constants/Prompt";
+import { UserDetailContext } from "./../../context/UserContext";
 
 export default function AddCourse() {
   const [loading, setLoading] = useState(false);
+  const { userDetails, setUserDetails } = useContext(UserDetailContext);
   const [userInput, setUserInput] = useState();
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopics] = useState([]);
+
+  const router = useRouter();
+
   const onGenerateTopic = async () => {
     setLoading(true);
     try {
@@ -89,6 +97,34 @@ export default function AddCourse() {
       console.log("Generating course for topics:", selectedTopic);
       const result = await generateCourse(selectedTopic);
       console.log("Generated course result:", result);
+
+      // Skip JSON parsing - work directly with the result
+      let coursesToSave = [];
+
+      if (Array.isArray(result)) {
+        coursesToSave = result;
+      } else if (result && typeof result === "object" && !result.error) {
+        coursesToSave = [result];
+      } else {
+        // If it's a string or anything else, skip it
+        console.log("Skipping non-object result");
+        return;
+      }
+
+      // Save each course to Firebase
+      for (let i = 0; i < coursesToSave.length; i++) {
+        const course = coursesToSave[i];
+        if (course && typeof course === "object") {
+          const courseId = `${Date.now()}_${i}`;
+          await setDoc(doc(db, "Courses", courseId), {
+            ...course,
+            createdOn: new Date(),
+            createdBy: userDetails?.email || "anonymous",
+          });
+        }
+      }
+
+      router.push("/(tabs)/home");
     } catch (err) {
       console.error("generateCourse error:", err);
     } finally {
