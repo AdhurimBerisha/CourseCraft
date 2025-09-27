@@ -1,6 +1,7 @@
 import React from "react";
 import { FlatList, Image, Text, View } from "react-native";
 
+import { Bar } from 'react-native-progress';
 import Colors from "../../constants/Colors";
 import { imageAssets } from "../../constants/Option";
 
@@ -58,6 +59,17 @@ export default function CourseProgress({ courseList }) {
                 }}>{item.chapters.length} Chapters</Text>
               </View>
             </View>
+
+                <View style={{
+                    marginTop:10
+                }}>
+                    <Bar progress={0} width={250} />
+                    <Text style={{
+                        fontFamily: 'outfit',
+                        marginTop:2
+                    }}>3 Out of 5 Chapters Completed</Text>
+                </View>
+
           </View>
         )}
         keyExtractor={(item, index) => index.toString()}
