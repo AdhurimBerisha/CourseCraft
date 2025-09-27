@@ -23,6 +23,7 @@ export default function CourseProgress({ courseList }) {
 
       <FlatList
         data={courseList}
+        showsHorizontalScrollIndicator={false}
         horizontal={true}
         renderItem={({ item, index }) => (
           <View style={{
