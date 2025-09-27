@@ -18,7 +18,7 @@ import { UserDetailContext } from "./../../context/UserContext";
 
 export default function AddCourse() {
   const [loading, setLoading] = useState(false);
-  const { userDetails, setUserDetails } = useContext(UserDetailContext);
+  const { userDetail, setUserDetail } = useContext(UserDetailContext);
   const [userInput, setUserInput] = useState();
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopics] = useState([]);
@@ -102,6 +102,8 @@ export default function AddCourse() {
     setLoading(true);
     try {
       console.log("Generating course for topics:", selectedTopic);
+      console.log("Current userDetail:", userDetail);
+      console.log("User email:", userDetail?.email);
       const result = await generateCourse(selectedTopic);
       console.log("Generated course result:", result);
 
@@ -123,10 +125,12 @@ export default function AddCourse() {
         const course = coursesToSave[i];
         if (course && typeof course === "object") {
           const courseId = `${Date.now()}_${i}`;
+          const createdByEmail = userDetail?.email || "anonymous";
+          console.log("Saving course with createdBy:", createdByEmail);
           await setDoc(doc(db, "Courses", courseId), {
             ...course,
             createdOn: new Date(),
-            createdBy: userDetails?.email || "anonymous",
+            createdBy: createdByEmail,
           });
         }
       }

@@ -74,11 +74,28 @@ export async function generateCourse(topics: string[]) {
   });
 
   const data = await response.json();
-  let text = data.choices?.[0]?.message?.content || "[]";
+  let text = data.choices?.[0]?.message?.content || "{}";
 
   try {
     text = text.replace(/```json|```/g, "").trim();
-    return JSON.parse(text);
+    const parsed = JSON.parse(text);
+    
+    // If the response has a "courses" property, return that array
+    if (parsed && typeof parsed === 'object' && parsed.courses) {
+      return parsed.courses;
+    }
+    
+    // If it's already an array, return it
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+    
+    // If it's a single course object, wrap it in an array
+    if (parsed && typeof parsed === 'object') {
+      return [parsed];
+    }
+    
+    return [];
   } catch (err) {
     console.error("Parse error, raw output:", text);
     return [];
