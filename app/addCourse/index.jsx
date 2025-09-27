@@ -1,7 +1,14 @@
 import { useRouter } from "expo-router";
 import { doc, setDoc } from "firebase/firestore";
 import { useContext, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import Button from "../../components/shared/Button";
 import { generateCourse, generateTopic } from "../../config/AIModel";
 import { db } from "../../config/firebaseConfig";
@@ -133,7 +140,7 @@ export default function AddCourse() {
   };
 
   return (
-    <View
+    <ScrollView
       style={{
         padding: 30,
         backgroundColor: Colors.WHITE,
@@ -240,7 +247,7 @@ export default function AddCourse() {
           loading={loading}
         />
       ) : null}
-    </View>
+    </ScrollView>
   );
 }
 
