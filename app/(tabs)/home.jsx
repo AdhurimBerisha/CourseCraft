@@ -1,22 +1,36 @@
-import { collection, query, where } from "firebase/firestore";
-import { useContext, useState } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useContext, useEffect, useState } from "react";
 import { Platform, View } from "react-native";
+import CourseList from "../../components/Home/CourseList";
+import CourseProgress from "../../components/Home/CourseProgress";
 import Header from "../../components/Home/Header";
 import NoCourse from "../../components/Home/NoCourse";
+import PracticeSection from "../../components/Home/PracticeSection";
 import Colors from "../../constants/Colors";
 import { UserDetailContext } from "../../context/UserContext";
 import { db } from "./../../config/firebaseConfig";
 export default function Home() {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
 
-  const [courseList, setCourseList] = useState();
+  const [courseList, setCourseList] = useState([]);
 
-  const GetCourseList = () => {
+  const GetCourseList = async () => {
     const q = query(
       collection(db, "Courses"),
       where("createdBy", "==", userDetail?.email)
     );
+    const querySnapshot = await getDocs(q);
+    const courses = [];
+    querySnapshot.forEach((doc) => {
+      console.log(doc.data());
+      courses.push(doc.data());
+    });
+    setCourseList(courses);
   };
+
+  useEffect(()=>{
+    userDetail && GetCourseList()
+  },[userDetail])
 
   return (
     <View
@@ -28,7 +42,14 @@ export default function Home() {
       }}
     >
       <Header />
-      <NoCourse />
+      {courseList.length == 0 ?
+      <NoCourse /> :
+      <View>
+        <CourseProgress courseList={courseList}/>
+        <PracticeSection />
+        <CourseList courseList={courseList} /> 
+      </View> 
+        }
     </View>
   );
 }
