@@ -83,7 +83,7 @@ export default function Chapters({ course }) {
               </Text>
             </View>
             {isChapterCompleted(index) ?
-           <Ionicons name="checkmark-circle" size={24} color="black" />
+           <Ionicons name="checkmark-circle" size={24} color={Colors.GREEN} />
             :<Foundation name="play" size={28} color={Colors.PRIMARY} />}
           </TouchableOpacity>
         )}
