@@ -23,7 +23,10 @@ export default function Home() {
     const courses = [];
     querySnapshot.forEach((doc) => {
       console.log(doc.data());
-      courses.push(doc.data());
+      courses.push({
+        ...doc.data(),
+        docId: doc.id
+      });
     });
     setCourseList(courses);
   };

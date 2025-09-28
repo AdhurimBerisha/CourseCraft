@@ -32,11 +32,9 @@ export default function AddCourse() {
       const result = await generateTopic(PROMPT);
       console.log("Generated topics (raw):", result);
 
-      // Normalize whatever the AI returned into an array of strings.
       if (Array.isArray(result)) {
         setTopics(result);
       } else if (typeof result === "string") {
-        // Try to parse a JSON array string if the model returned a JSON blob.
         try {
           const parsed = JSON.parse(result);
           if (Array.isArray(parsed)) setTopics(parsed);
@@ -48,7 +46,6 @@ export default function AddCourse() {
                 .filter(Boolean)
             );
         } catch (_e) {
-          // Fallback: split lines or comma-separated
           const byLines = result
             .split(/\r?\n/)
             .map((s) => s.trim())
@@ -63,7 +60,6 @@ export default function AddCourse() {
             );
         }
       } else if (result && typeof result === "object") {
-        // If an object was returned, try to find a first array property
         const arr = Object.values(result).find((v) => Array.isArray(v));
         if (Array.isArray(arr)) setTopics(arr);
         else setTopics([]);
@@ -107,7 +103,6 @@ export default function AddCourse() {
       const result = await generateCourse(selectedTopic);
       console.log("Generated course result:", result);
 
-      // Skip JSON parsing - work directly with the result
       let coursesToSave = [];
 
       if (Array.isArray(result)) {
@@ -115,12 +110,10 @@ export default function AddCourse() {
       } else if (result && typeof result === "object" && !result.error) {
         coursesToSave = [result];
       } else {
-        // If it's a string or anything else, skip it
         console.log("Skipping non-object result");
         return;
       }
 
-      // Save each course to Firebase
       for (let i = 0; i < coursesToSave.length; i++) {
         const course = coursesToSave[i];
         if (course && typeof course === "object") {
@@ -129,6 +122,7 @@ export default function AddCourse() {
           console.log("Saving course with createdBy:", createdByEmail);
           await setDoc(doc(db, "Courses", courseId), {
             ...course,
+            docId: courseId,
             createdOn: new Date(),
             createdBy: createdByEmail,
           });

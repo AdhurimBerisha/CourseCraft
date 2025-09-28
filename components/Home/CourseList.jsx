@@ -1,12 +1,12 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    FlatList,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Colors from "../../constants/Colors";
 import { imageAssets } from "../../constants/Option";
@@ -40,6 +40,7 @@ export default function CourseList({ courseList }) {
                 pathname: "/courseView",
                 params: {
                   courseParams: JSON.stringify(item),
+                  docId: item.docId,
                 },
               })
             }
