@@ -1,12 +1,12 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import {
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Colors from "../../constants/Colors";
 import { imageAssets } from "../../constants/Option";
@@ -37,10 +37,10 @@ export default function CourseList({ courseList }) {
           <TouchableOpacity
             onPress={() =>
               route.push({
-                pathname: "/courseView",
+                pathname: "/courseView/[courseId]",
                 params: {
+                  courseId: item.docId,
                   courseParams: JSON.stringify(item),
-                  docId: item.docId,
                 },
               })
             }
