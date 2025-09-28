@@ -8,7 +8,7 @@ import Colors from "../../constants/Colors";
 import Button from "./../../components/shared/Button";
 
 export default function ChapterView() {
-  const { chapterParams, docId, chapterIndex, courseParams } = useLocalSearchParams();
+  const { chapterParams, docId, chapterIndex } = useLocalSearchParams();
   const [currentPage, setCurrentPage] = useState(0);
   const [loader, setLoader] = useState(false);
   const router = useRouter();
@@ -24,7 +24,6 @@ export default function ChapterView() {
   
   let chapter;
   try {
-    // Check if chapterParams is already an object or needs parsing
     if (typeof chapterParams === 'string') {
       chapter = JSON.parse(chapterParams);
     } else if (typeof chapterParams === 'object' && chapterParams !== null) {
@@ -46,19 +45,29 @@ export default function ChapterView() {
   };
 
   const onChapterComplete = async () => {
-    // Save chapter complete
-    setLoader(true);
-    await updateDoc(doc(db, "Courses", docId), {
-      completedChapter: arrayUnion(chapterIndex),
-    });
-    setLoader(false);
-    router.replace({
-      pathname: "/courseView",
-      params: {
-        courseParams: courseParams
-      }
-    });
-    // Go back
+    try {
+      setLoader(true);
+      await updateDoc(doc(db, "Courses", docId), {
+        completedChapter: arrayUnion(parseInt(chapterIndex)),
+      });
+      setLoader(false);
+      
+      router.replace({
+        pathname: "/courseView/[courseId]",
+        params: {
+          courseId: docId
+        }
+      });
+    } catch (error) {
+      console.error("Error completing chapter:", error);
+      setLoader(false);
+      router.replace({
+        pathname: "/courseView/[courseId]",
+        params: {
+          courseId: docId
+        }
+      });
+    }
   };
 
   return (

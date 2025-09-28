@@ -13,7 +13,6 @@ export default function Index() {
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      console.log(user);
       const result = await getDoc(doc(db, "users", user?.email));
       setUserDetail(result.data());
       router.replace("/(tabs)/home");

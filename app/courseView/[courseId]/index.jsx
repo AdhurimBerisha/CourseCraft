@@ -1,6 +1,6 @@
-import { useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import Chapters from "../../../components/CourseView/Chapters";
 import Intro from "../../../components/CourseView/Intro";
@@ -12,24 +12,24 @@ export default function CourseView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const GetCourseById = async () => {
-      try {
-        const docRef = await getDoc(doc(db, "Courses", courseId));
-        if (docRef.exists()) {
-          const courseData = docRef.data();
-          setCourse(courseData);
-        } else {
-          setError("Course not found");
-        }
-      } catch (err) {
-        console.error("Error fetching course:", err);
-        setError("Failed to load course");
-      } finally {
-        setLoading(false);
+  const GetCourseById = useCallback(async () => {
+    try {
+      const docRef = await getDoc(doc(db, "Courses", courseId));
+      if (docRef.exists()) {
+        const courseData = docRef.data();
+        setCourse(courseData);
+      } else {
+        setError("Course not found");
       }
-    };
+    } catch (err) {
+      console.error("Error fetching course:", err);
+      setError("Failed to load course");
+    } finally {
+      setLoading(false);
+    }
+  }, [courseId]);
 
+  useEffect(() => {
     if (courseParams) {
       try {
         const parsedCourse = JSON.parse(courseParams);
@@ -46,7 +46,15 @@ export default function CourseView() {
       setError("No course ID provided");
       setLoading(false);
     }
-  }, [courseId, courseParams]);
+  }, [courseId, courseParams, GetCourseById]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (courseId && !courseParams) {
+        GetCourseById();
+      }
+    }, [courseId, courseParams, GetCourseById])
+  );
 
   if (loading) {
     return (

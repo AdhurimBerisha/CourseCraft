@@ -25,7 +25,6 @@ export default function SignUp() {
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (res) => {
         const user = res.user;
-        console.log(user);
         await SaveUser(user);
         //   save user to Database
       })

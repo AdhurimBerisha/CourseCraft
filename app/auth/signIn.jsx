@@ -29,7 +29,6 @@ export default function SignIn() {
     signInWithEmailAndPassword(auth, email, password)
       .then(async (res) => {
         const user = res.user;
-        console.log(user);
         await getUserDetail();
         setLoading(false);
         router.replace("/(tabs)/home");
