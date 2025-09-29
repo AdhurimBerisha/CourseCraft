@@ -63,15 +63,13 @@ export default function Quiz() {
       });
     } catch (e) {
       try {
-        const quizResultData = {
+        await addDoc(collection(db, "QuizResults"), {
           courseId: course.docId,
           courseTitle: course.courseTitle,
           quizResult: result,
           completedAt: new Date(),
           userId: userDetail.email,
-        };
-        console.log("Saving quiz result:", quizResultData);
-        await addDoc(collection(db, "QuizResults"), quizResultData);
+        });
         setLoading(false);
         router.replace({
           pathname: "/quiz/summary",

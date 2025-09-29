@@ -7,15 +7,6 @@ import Colors from "../../constants/Colors";
 export default function CourseList({ courseList, option }) {
   const router = useRouter();
 
-  console.log(
-    "CourseList received courses:",
-    courseList.map((course) => ({
-      courseTitle: course.courseTitle,
-      hasQuizResult: course.hasQuizResult,
-      docId: course.docId,
-    }))
-  );
-
   const onPress = (course) => {
     if (option.name == "Quiz") {
       router.push({

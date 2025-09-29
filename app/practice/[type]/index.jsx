@@ -20,7 +20,6 @@ export default function PracticeTypeHomeScreen() {
   const [courseList, setCourseList] = useState([]);
 
   useEffect(() => {
-    console.log("useEffect triggered, userDetail:", userDetail);
     if (userDetail && userDetail.email) {
       GetCourseList();
     }
@@ -30,7 +29,6 @@ export default function PracticeTypeHomeScreen() {
   useFocusEffect(
     useCallback(() => {
       if (userDetail && userDetail.email) {
-        console.log("Screen focused, refreshing course list...");
         GetCourseList();
       }
     }, [userDetail])
@@ -44,48 +42,30 @@ export default function PracticeTypeHomeScreen() {
         where("userId", "==", userDetail.email)
       );
       const quizSnapshot = await getDocs(quizQuery);
-      console.log(
-        `Checking quiz results for course ${courseId}:`,
-        quizSnapshot.size,
-        "results found"
-      );
       return !quizSnapshot.empty;
     } catch (e) {
-      console.log("Error checking quiz results:", e);
       return false;
     }
   };
 
   const GetCourseList = async () => {
-    console.log("GetCourseList called with userDetail:", userDetail);
     setLoading(true);
     setCourseList([]);
     try {
       const q = query(
         collection(db, "Courses"),
         where("createdBy", "==", userDetail.email)
-        // Removed orderBy temporarily to avoid index issues
       );
-      console.log("Query created, fetching docs...");
       const querySnapshot = await getDocs(q);
-      console.log("Query snapshot size:", querySnapshot.size);
 
       const courses = [];
       for (const doc of querySnapshot.docs) {
-        console.log("Document data:", doc.data());
-        console.log("Document ID:", doc.id);
-
         // Check if user has completed quiz for this course
         const hasQuizResult = await checkQuizResults(doc.id);
 
         // Also check if quizResult exists in the course document itself
         const courseData = doc.data();
         const hasQuizResultInCourse = !!courseData.quizResult;
-        console.log(
-          `Course ${doc.id} - quizResult in course:`,
-          hasQuizResultInCourse,
-          courseData.quizResult ? "exists" : "not found"
-        );
 
         courses.push({
           ...courseData,
@@ -94,11 +74,9 @@ export default function PracticeTypeHomeScreen() {
         });
       }
 
-      console.log("All courses:", courses);
       setCourseList(courses);
       setLoading(false);
     } catch (e) {
-      console.log("Error fetching courses:", e);
       setLoading(false);
     }
   };
