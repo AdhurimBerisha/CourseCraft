@@ -7,7 +7,7 @@ import Intro from "../../../components/CourseView/Intro";
 import { db } from "../../../config/firebaseConfig";
 import Colors from "../../../constants/Colors";
 export default function CourseView() {
-  const { courseParams, courseId } = useLocalSearchParams();
+  const { courseParams, courseId, enroll } = useLocalSearchParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -90,7 +90,7 @@ export default function CourseView() {
             backgroundColor: Colors.WHITE,
           }}
         >
-          <Intro course={course} />
+          <Intro course={course} enroll={enroll} />
           <Chapters course={course} />
         </View>
       )}

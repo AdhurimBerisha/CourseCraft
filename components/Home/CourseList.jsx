@@ -11,7 +11,11 @@ import {
 import Colors from "../../constants/Colors";
 import { imageAssets } from "../../constants/Option";
 
-export default function CourseList({ courseList, heading = "Courses" }) {
+export default function CourseList({
+  courseList,
+  heading = "Courses",
+  enroll = false,
+}) {
   const route = useRouter();
 
   return (
@@ -41,6 +45,7 @@ export default function CourseList({ courseList, heading = "Courses" }) {
                 params: {
                   courseId: item.docId,
                   courseParams: JSON.stringify(item),
+                  enroll: enroll,
                 },
               })
             }
