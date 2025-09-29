@@ -38,27 +38,27 @@ export const CourseCategory = [
 export const ProfileMenu = [
   {
     name: "Add Course",
-    icon: "add-outline", //Ionic Icons
+    icon: "add-outline",
     path: "/addCourse",
   },
   {
     name: "My Course",
-    icon: "book", //Ionic Icons
+    icon: "book",
     path: "/(tabs)/home",
   },
   {
     name: "Course Progress",
-    icon: "analytics-outline", //Ionic Icons
+    icon: "analytics-outline",
     path: "/(tabs)/progress",
   },
   {
     name: "My Subscription",
-    icon: "shield-checkmark", //Ionic Icons
+    icon: "shield-checkmark",
     path: "",
   },
   {
     name: "Logout",
-    icon: "log-out", //Ionic Icons
+    icon: "log-out",
     path: "/login",
   },
 ];

@@ -11,7 +11,7 @@ import {
 import Colors from "../../constants/Colors";
 import { imageAssets } from "../../constants/Option";
 
-export default function CourseList({ courseList }) {
+export default function CourseList({ courseList, heading = "Courses" }) {
   const route = useRouter();
 
   return (
@@ -26,7 +26,7 @@ export default function CourseList({ courseList }) {
           fontSize: 25,
         }}
       >
-        Courses
+        {heading}
       </Text>
 
       <FlatList
