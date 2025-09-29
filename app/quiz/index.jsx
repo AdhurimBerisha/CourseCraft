@@ -111,7 +111,12 @@ export default function Quiz() {
           }}
         >
           <Pressable>
-            <Ionicons name="arrow-back" size={30} color="white" />
+            <Ionicons
+              name="arrow-back"
+              size={30}
+              color="white"
+              onPress={() => router.back()}
+            />
           </Pressable>
           <Text
             style={{
