@@ -139,14 +139,14 @@ export default function Profile() {
         </View>
         <View style={styles.profileItemText}>
           <Text style={styles.profileItemTitle}>{title}</Text>
-          {subtitle && (
+          {subtitle ? (
             <Text style={styles.profileItemSubtitle}>{subtitle}</Text>
-          )}
+          ) : null}
         </View>
       </View>
-      {showArrow && (
+      {showArrow ? (
         <Ionicons name="chevron-forward" size={20} color={Colors.GRAY} />
-      )}
+      ) : null}
     </TouchableOpacity>
   );
 
@@ -218,19 +218,19 @@ export default function Profile() {
           <View style={styles.statsContainer}>
             <StatCard
               title="Courses"
-              value={stats.totalCourses.toString()}
+              value={stats.totalCourses?.toString() || "0"}
               icon="book"
               color={Colors.PRIMARY}
             />
             <StatCard
               title="Completed"
-              value={stats.completedCourses.toString()}
+              value={stats.completedCourses?.toString() || "0"}
               icon="checkmark-circle"
               color={Colors.GREEN}
             />
             <StatCard
               title="Streak"
-              value={stats.studyStreak.toString()}
+              value={stats.studyStreak?.toString() || "0"}
               icon="flame"
               color="#FF6B35"
             />
