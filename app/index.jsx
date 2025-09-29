@@ -2,22 +2,59 @@ import { UserDetailContext } from "@/context/UserContext";
 import { useRouter } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { useContext } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Colors from "../constants/Colors";
 import { auth, db } from "./../config/firebaseConfig";
 
 export default function Index() {
   const router = useRouter();
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
+  const [loading, setLoading] = useState(true);
+  const [initializing, setInitializing] = useState(true);
 
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const result = await getDoc(doc(db, "users", user?.email));
-      setUserDetail(result.data());
-      router.replace("/(tabs)/home");
-    }
-  });
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const result = await getDoc(doc(db, "users", user?.email));
+          setUserDetail(result.data());
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      } else {
+        setUserDetail(null);
+      }
+
+      if (initializing) {
+        setInitializing(false);
+      }
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, [initializing, setUserDetail]);
+
+  if (loading || initializing) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors.PRIMARY} />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (userDetail) {
+    router.replace("/(tabs)/home");
+    return null;
+  }
 
   return (
     <View
@@ -95,6 +132,18 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.WHITE,
+  },
+  loadingText: {
+    fontFamily: "outfit",
+    fontSize: 16,
+    color: Colors.PRIMARY,
+    marginTop: 10,
+  },
   button: {
     padding: 15,
     backgroundColor: Colors.WHITE,

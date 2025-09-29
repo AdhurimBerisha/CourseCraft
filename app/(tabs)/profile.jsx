@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
-import { useContext, useState } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useContext, useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -13,15 +14,90 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { auth } from "../../config/firebaseConfig";
+import { auth, db } from "../../config/firebaseConfig";
 import Colors from "../../constants/Colors";
 import { UserDetailContext } from "../../context/UserContext";
 
 export default function Profile() {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
   const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({
+    totalCourses: 0,
+    completedCourses: 0,
+    studyStreak: 0,
+  });
   const router = useRouter();
   const width = Dimensions.get("screen").width;
+
+  const getChaptersLength = (chapters) => {
+    if (!chapters) return 0;
+    if (Array.isArray(chapters)) return chapters.length;
+    return Object.keys(chapters).length;
+  };
+
+  const fetchUserStats = async () => {
+    if (!userDetail?.email) return;
+
+    try {
+      const q = query(
+        collection(db, "Courses"),
+        where("createdBy", "==", userDetail.email)
+      );
+      const querySnapshot = await getDocs(q);
+      const courses = [];
+
+      querySnapshot.forEach((doc) => {
+        const courseData = {
+          ...doc.data(),
+          docId: doc.id,
+        };
+        courses.push(courseData);
+      });
+
+      const totalCourses = courses.length;
+      const completedCourses = courses.filter((course) => {
+        const completedCount = course.completedChapter?.length || 0;
+        const totalCount = getChaptersLength(course.chapters);
+        return completedCount === totalCount && totalCount > 0;
+      }).length;
+
+      const studyStreak = Math.min(completedCourses * 2, 30); // Simplified calculation
+
+      setStats({
+        totalCourses,
+        completedCourses,
+        studyStreak,
+      });
+    } catch (error) {
+      console.error("Error fetching user stats:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (userDetail?.email) {
+      fetchUserStats();
+    }
+  }, [userDetail]);
+
+  // Debug logging
+  console.log("Profile - userDetail:", userDetail);
+  console.log("Profile - stats:", stats);
+
+  // Show loading if user data is not available yet
+  if (!userDetail) {
+    return (
+      <View style={styles.container}>
+        <Image
+          source={require("./../../assets/images/wave.png")}
+          style={styles.backgroundImage}
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.PRIMARY} />
+          <Text style={styles.loadingText}>Loading profile...</Text>
+        </View>
+      </View>
+    );
+  }
 
   const handleSignOut = () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -141,60 +217,26 @@ export default function Profile() {
           <View style={styles.statsContainer}>
             <StatCard
               title="Courses"
-              value="12"
+              value={stats.totalCourses.toString()}
               icon="book"
               color={Colors.PRIMARY}
             />
             <StatCard
               title="Completed"
-              value="8"
+              value={stats.completedCourses.toString()}
               icon="checkmark-circle"
               color={Colors.GREEN}
             />
-            <StatCard title="Streak" value="7" icon="flame" color="#FF6B35" />
+            <StatCard
+              title="Streak"
+              value={stats.studyStreak.toString()}
+              icon="flame"
+              color="#FF6B35"
+            />
           </View>
 
           {/* Profile Options */}
           <View style={styles.optionsContainer}>
-            <Text style={styles.sectionTitle}>Account</Text>
-
-            <ProfileItem
-              icon="person-outline"
-              title="Edit Profile"
-              subtitle="Update your personal information"
-              onPress={() => console.log("Edit Profile")}
-            />
-
-            <ProfileItem
-              icon="notifications-outline"
-              title="Notifications"
-              subtitle="Manage your notification preferences"
-              onPress={() => console.log("Notifications")}
-            />
-
-            <ProfileItem
-              icon="settings-outline"
-              title="Settings"
-              subtitle="App preferences and configuration"
-              onPress={() => console.log("Settings")}
-            />
-
-            <Text style={styles.sectionTitle}>Support</Text>
-
-            <ProfileItem
-              icon="help-circle-outline"
-              title="Help & Support"
-              subtitle="Get help and contact support"
-              onPress={() => console.log("Help")}
-            />
-
-            <ProfileItem
-              icon="information-circle-outline"
-              title="About"
-              subtitle="App version and information"
-              onPress={() => console.log("About")}
-            />
-
             <Text style={styles.sectionTitle}>Account Actions</Text>
 
             <ProfileItem
@@ -393,5 +435,16 @@ const styles = StyleSheet.create({
     fontFamily: "outfit",
     fontSize: 14,
     color: Colors.GRAY,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontFamily: "outfit",
+    fontSize: 16,
+    color: Colors.WHITE,
+    marginTop: 10,
   },
 });
