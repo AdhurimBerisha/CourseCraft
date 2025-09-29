@@ -1,9 +1,23 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useRouter } from "expo-router";
 import React from "react";
-import { FlatList, Image, Text, View } from "react-native";
+import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../../constants/Colors";
 
 export default function CourseList({ courseList, option }) {
+  const router = useRouter();
+
+  const onPress = (course) => {
+    if (option.name == "Quiz") {
+      router.push({
+        pathname: "/quiz",
+        params: {
+          courseParams: JSON.stringify(course),
+        },
+      });
+    }
+  };
+
   return (
     <View>
       <FlatList
@@ -13,7 +27,8 @@ export default function CourseList({ courseList, option }) {
           padding: 20,
         }}
         renderItem={({ item, index }) => (
-          <View
+          <TouchableOpacity
+            onPress={() => onPress(item)}
             style={{
               flex: 1,
               display: "flex",
@@ -28,11 +43,16 @@ export default function CourseList({ courseList, option }) {
             }}
             key={index}
           >
-            <Ionicons name="checkmark-circle" size={24} color={Colors.GRAY} style={{
-                position:'absolute',
-                top:10,
-                right:20
-            }} />
+            <Ionicons
+              name="checkmark-circle"
+              size={24}
+              color={Colors.GRAY}
+              style={{
+                position: "absolute",
+                top: 10,
+                right: 20,
+              }}
+            />
             <Image
               source={option.icon}
               style={{
@@ -41,13 +61,17 @@ export default function CourseList({ courseList, option }) {
                 objectFit: "contain",
               }}
             />
-            <Text style={{
-                fontFamily:'outfit',
-                textAlign: 'center',
-                fontSize:18,
-                marginTop:7
-            }}>{item.courseTitle}</Text>
-          </View>
+            <Text
+              style={{
+                fontFamily: "outfit",
+                textAlign: "center",
+                fontSize: 18,
+                marginTop: 7,
+              }}
+            >
+              {item.courseTitle}
+            </Text>
+          </TouchableOpacity>
         )}
       />
     </View>

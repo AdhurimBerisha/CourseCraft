@@ -39,13 +39,17 @@ export default function PracticeTypeHomeScreen() {
       console.log("Query created, fetching docs...");
       const querySnapshot = await getDocs(q);
       console.log("Query snapshot size:", querySnapshot.size);
-      
+
       const courses = [];
       querySnapshot.forEach((doc) => {
         console.log("Document data:", doc.data());
-        courses.push(doc.data());
+        console.log("Document ID:", doc.id);
+        courses.push({
+          ...doc.data(),
+          docId: doc.id,
+        });
       });
-      
+
       console.log("All courses:", courses);
       setCourseList(courses);
       setLoading(false);
