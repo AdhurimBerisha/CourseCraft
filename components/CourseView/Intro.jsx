@@ -7,11 +7,16 @@ import Colors from "../../constants/Colors";
 import { imageAssets } from "../../constants/Option";
 
 export default function Intro({ course }) {
-    const router = useRouter()
+  const router = useRouter();
+
+  const getChaptersLength = (chapters) => {
+    if (!chapters) return 0;
+    if (Array.isArray(chapters)) return chapters.length;
+    return Object.keys(chapters).length;
+  };
 
   return (
     <View>
-      
       <Image
         source={imageAssets[course.banner_image]}
         style={{
@@ -49,7 +54,7 @@ export default function Intro({ course }) {
               fontSize: 18,
             }}
           >
-            {course.chapters.length} Chapters{" "}
+            {getChaptersLength(course.chapters)} Chapters{" "}
           </Text>
         </View>
         <Text
@@ -72,12 +77,14 @@ export default function Intro({ course }) {
         </Text>
         <Button text={"Start Now"} onPress={() => console.log("")} />
       </View>
-      <Pressable style={{
-        position:'absolute',
-        padding: 10,
-        marginTop:30
-      }}
-      onPress={() => router.back()}>
+      <Pressable
+        style={{
+          position: "absolute",
+          padding: 10,
+          marginTop: 30,
+        }}
+        onPress={() => router.back()}
+      >
         <Ionicons name="arrow-back" size={34} color="black" />
       </Pressable>
     </View>

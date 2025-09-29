@@ -16,19 +16,30 @@ export default function CourseListByCategory({ category }) {
   const GetCourseLisByCategory = async () => {
     setCourseList([]);
     setLoading(true);
-    const q = query(
-      collection(db, "Courses"),
-      where("category", "==", category),
-      orderBy("createdOn", "desc")
-    );
+    try {
+      const q = query(
+        collection(db, "Courses"),
+        where("category", "==", category),
+        orderBy("createdOn", "desc")
+      );
 
-    const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(q);
+      const courses = [];
 
-    querySnapshot.forEach((doc) => {
-      console.log(doc.data());
-      setCourseList((prev) => [...prev, doc.data()]);
-    });
-    setLoading(false);
+      querySnapshot.forEach((doc) => {
+        const courseData = {
+          ...doc.data(),
+          docId: doc.id,
+        };
+        courses.push(courseData);
+      });
+
+      setCourseList(courses);
+    } catch (error) {
+      console.error("Error fetching courses by category:", error);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <View>

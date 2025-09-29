@@ -4,9 +4,17 @@ import Colors from "../../constants/Colors";
 import { imageAssets } from "../../constants/Option";
 
 export default function CourseProgressCard({ course, item }) {
+  const getChaptersLength = (chapters) => {
+    if (!chapters) return 0;
+    if (Array.isArray(chapters)) return chapters.length;
+    return Object.keys(chapters).length;
+  };
+
   const GetCompletedChapter = (course) => {
-    const completedChapter = course.completedChapter.length;
-    const perc = completedChapter / course.chapters.length;
+    const completedChapter = course.completedChapter?.length || 0;
+    const totalChapters = getChaptersLength(course.chapters);
+    if (totalChapters === 0) return 0;
+    const perc = completedChapter / totalChapters;
     return perc;
   };
   return (
@@ -55,7 +63,7 @@ export default function CourseProgressCard({ course, item }) {
               fontSize: 15,
             }}
           >
-            {item.chapters.length} Chapters
+            {getChaptersLength(item.chapters)} Chapters
           </Text>
         </View>
       </View>
@@ -72,8 +80,8 @@ export default function CourseProgressCard({ course, item }) {
             marginTop: 2,
           }}
         >
-          {item.completedChapter.length ?? 0} Out of {item.chapters.length}{" "}
-          Chapters Completed
+          {item.completedChapter?.length ?? 0} Out of{" "}
+          {getChaptersLength(item.chapters)} Chapters Completed
         </Text>
       </View>
     </View>

@@ -80,7 +80,7 @@ export default function CourseList({ courseList, heading = "Courses" }) {
                   fontFamily: "outfit",
                 }}
               >
-                {item.chapters.length} Chapters{" "}
+                {item.chapters?.length || 0} Chapters{" "}
               </Text>
             </View>
           </TouchableOpacity>

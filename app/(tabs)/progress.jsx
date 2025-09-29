@@ -65,14 +65,22 @@ export default function Progress() {
     }
   };
 
+  const getChaptersLength = (chapters) => {
+    if (!chapters) return 0;
+    if (Array.isArray(chapters)) return chapters.length;
+    return Object.keys(chapters).length;
+  };
+
   const calculateStats = (courses) => {
     const totalCourses = courses.length;
-    const completedCourses = courses.filter(
-      (course) => course.completedChapter?.length === course.chapters?.length
-    ).length;
+    const completedCourses = courses.filter((course) => {
+      const completedCount = course.completedChapter?.length || 0;
+      const totalCount = getChaptersLength(course.chapters);
+      return completedCount === totalCount && totalCount > 0;
+    }).length;
 
     const totalChapters = courses.reduce(
-      (sum, course) => sum + (course.chapters?.length || 0),
+      (sum, course) => sum + getChaptersLength(course.chapters),
       0
     );
 
@@ -121,16 +129,17 @@ export default function Progress() {
   const getFilteredCourses = () => {
     switch (filter) {
       case "completed":
-        return courseList.filter(
-          (course) =>
-            course.completedChapter?.length === course.chapters?.length
-        );
+        return courseList.filter((course) => {
+          const completedCount = course.completedChapter?.length || 0;
+          const totalCount = getChaptersLength(course.chapters);
+          return completedCount === totalCount && totalCount > 0;
+        });
       case "in-progress":
-        return courseList.filter(
-          (course) =>
-            course.completedChapter?.length > 0 &&
-            course.completedChapter?.length < course.chapters?.length
-        );
+        return courseList.filter((course) => {
+          const completedCount = course.completedChapter?.length || 0;
+          const totalCount = getChaptersLength(course.chapters);
+          return completedCount > 0 && completedCount < totalCount;
+        });
       default:
         return courseList;
     }
