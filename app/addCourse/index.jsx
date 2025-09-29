@@ -30,7 +30,6 @@ export default function AddCourse() {
     try {
       const PROMPT = (userInput || "") + " " + Prompt.IDEA;
       const result = await generateTopic(PROMPT);
-      console.log("Generated topics (raw):", result);
 
       if (Array.isArray(result)) {
         setTopics(result);
@@ -97,11 +96,8 @@ export default function AddCourse() {
     }
     setLoading(true);
     try {
-      console.log("Generating course for topics:", selectedTopic);
-      console.log("Current userDetail:", userDetail);
-      console.log("User email:", userDetail?.email);
+
       const result = await generateCourse(selectedTopic);
-      console.log("Generated course result:", result);
 
       let coursesToSave = [];
 
@@ -119,7 +115,6 @@ export default function AddCourse() {
         if (course && typeof course === "object") {
           const courseId = `${Date.now()}_${i}`;
           const createdByEmail = userDetail?.email || "anonymous";
-          console.log("Saving course with createdBy:", createdByEmail);
           await setDoc(doc(db, "Courses", courseId), {
             ...course,
             docId: courseId,

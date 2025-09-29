@@ -23,7 +23,6 @@ export default function Home() {
     const querySnapshot = await getDocs(q);
     const courses = [];
     querySnapshot.forEach((doc) => {
-      console.log(doc.data());
       courses.push({
         ...doc.data(),
         docId: doc.id,

@@ -43,7 +43,6 @@ export default function SignIn() {
 
   const getUserDetail = async () => {
     const result = await getDoc(doc(db, "users", email));
-    console.log(result.data);
     setUserDetail(result.data());
   };
 
