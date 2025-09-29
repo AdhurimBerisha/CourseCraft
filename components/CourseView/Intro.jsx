@@ -109,7 +109,19 @@ export default function Intro({ course, enroll }) {
             onPress={() => onEnrollCourse()}
           />
         ) : (
-          <Button text={"Start Now"} onPress={() => console.log("")} />
+          <Button
+            text={"Start Now"}
+            onPress={() => {
+              router.push({
+                pathname: "/courseView/[courseId]",
+                params: {
+                  courseId: course.docId || course.id,
+                  courseParams: JSON.stringify(course),
+                  enroll: false,
+                },
+              });
+            }}
+          />
         )}
       </View>
       <Pressable
