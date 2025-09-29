@@ -11,10 +11,11 @@ import { UserDetailContext } from "../../context/UserContext";
 import { db } from "./../../config/firebaseConfig";
 export default function Home() {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
-
   const [courseList, setCourseList] = useState([]);
+  const [loading,setLoading] = useState(false)
 
   const GetCourseList = async () => {
+    setLoading(true)
     const q = query(
       collection(db, "Courses"),
       where("createdBy", "==", userDetail?.email)
@@ -29,6 +30,7 @@ export default function Home() {
       });
     });
     setCourseList(courses);
+    setLoading(false)
   };
 
   useEffect(()=>{
@@ -38,6 +40,8 @@ export default function Home() {
   return (
     <FlatList
     data={[]}
+    onRefresh={GetCourseList}
+    refreshing={loading}
     ListHeaderComponent={
     <View
       style={{
