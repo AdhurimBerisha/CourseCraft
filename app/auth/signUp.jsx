@@ -63,6 +63,7 @@ export default function SignUp() {
         style={{
           width: 180,
           height: 180,
+          borderRadius: 20,
         }}
       />
       <Text

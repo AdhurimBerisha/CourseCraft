@@ -62,6 +62,7 @@ export default function SignIn() {
         style={{
           width: 180,
           height: 180,
+          borderRadius: 20,
         }}
       />
       <Text
