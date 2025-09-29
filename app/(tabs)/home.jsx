@@ -1,6 +1,6 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
-import { FlatList, Platform, View } from "react-native";
+import { FlatList, Image, Platform, View } from "react-native";
 import CourseList from "../../components/Home/CourseList";
 import CourseProgress from "../../components/Home/CourseProgress";
 import Header from "../../components/Home/Header";
@@ -12,10 +12,10 @@ import { db } from "./../../config/firebaseConfig";
 export default function Home() {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
   const [courseList, setCourseList] = useState([]);
-  const [loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const GetCourseList = async () => {
-    setLoading(true)
+    setLoading(true);
     const q = query(
       collection(db, "Courses"),
       where("createdBy", "==", userDetail?.email)
@@ -26,41 +26,51 @@ export default function Home() {
       console.log(doc.data());
       courses.push({
         ...doc.data(),
-        docId: doc.id
+        docId: doc.id,
       });
     });
     setCourseList(courses);
-    setLoading(false)
+    setLoading(false);
   };
 
-  useEffect(()=>{
-    userDetail && GetCourseList()
-  },[userDetail])
+  useEffect(() => {
+    userDetail && GetCourseList();
+  }, [userDetail]);
 
   return (
     <FlatList
-    data={[]}
-    onRefresh={GetCourseList}
-    refreshing={loading}
-    ListHeaderComponent={
-    <View
-      style={{
-        padding: 25,
-        paddingTop: Platform.OS == "ios" ? 50 : 50,
-        flex: 1,
-        backgroundColor: Colors.WHITE,
-      }}
-    >
-      <Header />
-      {courseList.length == 0 ?
-      <NoCourse /> :
-      <View>
-        <CourseProgress courseList={courseList}/>
-        <PracticeSection />
-        <CourseList courseList={courseList} /> 
-      </View> 
-        }
-    </View>
-    }/>
+      data={[]}
+      onRefresh={GetCourseList}
+      refreshing={loading}
+      ListHeaderComponent={
+        <View style={{ flex: 1, backgroundColor: Colors.WHITE }}>
+          <Image
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: 700,
+            }}
+            source={require("./../../assets/images/wave.png")}
+          />
+          <View
+            style={{
+              padding: 25,
+              paddingTop: Platform.OS == "ios" ? 50 : 50,
+            }}
+          >
+            <Header />
+            {courseList.length == 0 ? (
+              <NoCourse />
+            ) : (
+              <View>
+                <CourseProgress courseList={courseList} />
+                <PracticeSection />
+                <CourseList courseList={courseList} />
+              </View>
+            )}
+          </View>
+        </View>
+      }
+    />
   );
 }

@@ -22,6 +22,8 @@ export default function CourseProgress({ courseList }) {
         style={{
           fontFamily: "outfit-bold",
           fontSize: 25,
+          color:Colors.WHITE
+
         }}
       >
         Progress
@@ -36,7 +38,7 @@ export default function CourseProgress({ courseList }) {
             style={{
               margin: 7,
               padding: 15,
-              backgroundColor: Colors.BG_GRAY,
+              backgroundColor: Colors.WHITE,
               borderRadius: 15,
               width: 280,
             }}
