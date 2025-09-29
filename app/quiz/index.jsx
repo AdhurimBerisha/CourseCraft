@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -13,6 +13,7 @@ import {
 import { Bar } from "react-native-progress";
 import { db } from "../../config/firebaseConfig";
 import Colors from "../../constants/Colors";
+import { UserDetailContext } from "../../context/UserContext";
 import Button from "./../../components/shared/Button";
 
 export default function Quiz() {
@@ -23,6 +24,8 @@ export default function Quiz() {
   const [selectedOption, setSelectedOption] = useState();
   const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { userDetail } = useContext(UserDetailContext);
+  const router = useRouter();
 
   const GetProgress = (currentPage) => {
     const perc = currentPage / quiz.length;
@@ -54,18 +57,32 @@ export default function Quiz() {
         quizResult: result,
       });
       setLoading(false);
+      router.replace({
+        pathname: "/quiz/summary",
+        params: { quizResult: result },
+      });
     } catch (e) {
       try {
-        await addDoc(collection(db, "QuizResults"), {
+        const quizResultData = {
           courseId: course.docId,
           courseTitle: course.courseTitle,
           quizResult: result,
           completedAt: new Date(),
-          userId: course.createdBy || "unknown",
-        });
+          userId: userDetail.email,
+        };
+        console.log("Saving quiz result:", quizResultData);
+        await addDoc(collection(db, "QuizResults"), quizResultData);
         setLoading(false);
+        router.replace({
+          pathname: "/quiz/summary",
+          params: { quizResult: result },
+        });
       } catch (fallbackError) {
         setLoading(false);
+        router.replace({
+          pathname: "/quiz/summary",
+          params: { quizResult: result },
+        });
       }
     }
   };

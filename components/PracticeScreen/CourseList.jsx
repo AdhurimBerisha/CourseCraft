@@ -7,6 +7,15 @@ import Colors from "../../constants/Colors";
 export default function CourseList({ courseList, option }) {
   const router = useRouter();
 
+  console.log(
+    "CourseList received courses:",
+    courseList.map((course) => ({
+      courseTitle: course.courseTitle,
+      hasQuizResult: course.hasQuizResult,
+      docId: course.docId,
+    }))
+  );
+
   const onPress = (course) => {
     if (option.name == "Quiz") {
       router.push({
@@ -46,7 +55,7 @@ export default function CourseList({ courseList, option }) {
             <Ionicons
               name="checkmark-circle"
               size={24}
-              color={Colors.GRAY}
+              color={item.hasQuizResult ? Colors.GREEN : Colors.GRAY}
               style={{
                 position: "absolute",
                 top: 10,

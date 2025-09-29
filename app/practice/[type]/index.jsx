@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
 import CourseList from "../../../components/PracticeScreen/CourseList";
 import { db } from "../../../config/firebaseConfig";
@@ -26,6 +26,36 @@ export default function PracticeTypeHomeScreen() {
     }
   }, [userDetail]);
 
+  // Refresh course list when screen comes into focus (e.g., after completing a quiz)
+  useFocusEffect(
+    useCallback(() => {
+      if (userDetail && userDetail.email) {
+        console.log("Screen focused, refreshing course list...");
+        GetCourseList();
+      }
+    }, [userDetail])
+  );
+
+  const checkQuizResults = async (courseId) => {
+    try {
+      const quizQuery = query(
+        collection(db, "QuizResults"),
+        where("courseId", "==", courseId),
+        where("userId", "==", userDetail.email)
+      );
+      const quizSnapshot = await getDocs(quizQuery);
+      console.log(
+        `Checking quiz results for course ${courseId}:`,
+        quizSnapshot.size,
+        "results found"
+      );
+      return !quizSnapshot.empty;
+    } catch (e) {
+      console.log("Error checking quiz results:", e);
+      return false;
+    }
+  };
+
   const GetCourseList = async () => {
     console.log("GetCourseList called with userDetail:", userDetail);
     setLoading(true);
@@ -41,14 +71,28 @@ export default function PracticeTypeHomeScreen() {
       console.log("Query snapshot size:", querySnapshot.size);
 
       const courses = [];
-      querySnapshot.forEach((doc) => {
+      for (const doc of querySnapshot.docs) {
         console.log("Document data:", doc.data());
         console.log("Document ID:", doc.id);
+
+        // Check if user has completed quiz for this course
+        const hasQuizResult = await checkQuizResults(doc.id);
+
+        // Also check if quizResult exists in the course document itself
+        const courseData = doc.data();
+        const hasQuizResultInCourse = !!courseData.quizResult;
+        console.log(
+          `Course ${doc.id} - quizResult in course:`,
+          hasQuizResultInCourse,
+          courseData.quizResult ? "exists" : "not found"
+        );
+
         courses.push({
-          ...doc.data(),
+          ...courseData,
           docId: doc.id,
+          hasQuizResult: hasQuizResult || hasQuizResultInCourse,
         });
-      });
+      }
 
       console.log("All courses:", courses);
       setCourseList(courses);
