@@ -20,7 +20,7 @@ Users simply enter a topic they want to learn, and the app **automatically gener
    git clone https://github.com/AdhurimBerisha/CourseCraft.git
    ```
 
-2. Install dependencies for frontend and backend
+2. Install dependencies
    npm install
 
 3. Run the development servers
